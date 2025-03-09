@@ -1,176 +1,133 @@
 'use client'
+
 import * as React from 'react'
-import { AccessibleIcon, Flex, Theme } from '@radix-ui/themes'
-import styles from './Header.module.css'
-import { BoxLink } from '@/components/ui/BoxLink'
-import { ThemeToggle } from './ThemeToggle'
+// import { BoxLink } from '@/components/ui/BoxLink'
 // import { HamburgerMenuIcon } from '@radix-ui/react-icons'
 import NextLink from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useMobileMenuContext } from './MobileMenu'
-import { cn } from '@/lib/utils'
+// import { useMobileMenuContext } from './MobileMenu'
 import { LogoIcon } from './Logo'
-import { RemoveScroll } from 'react-remove-scroll'
 import WalletButton from './WalletButton'
+// import { PrivyWalletButton } from '@/components/wallet/privy'
 
-export interface HeaderProps {
-  children?: React.ReactNode
-  gitHubLink?: string
-  ghost?: boolean
-}
+// export interface HeaderProps {
+//   children?: React.ReactNode
+//   gitHubLink?: string
+//   ghost?: boolean
+// }
 
-type ScrollState = 'at-top' | 'scrolling-up' | 'scrolling-down'
+// type ScrollState = 'at-top' | 'scrolling-up' | 'scrolling-down'
 
-export const Header = ({ ghost }: HeaderProps) => {
-  const mobileMenu = useMobileMenuContext()
+export const Header = () => {
+  // const mobileMenu = useMobileMenuContext()
   // const router = useRouter();
   const pathname = usePathname()!
 
-  const [scrollState, setScrollState] = React.useState<ScrollState>('at-top')
+  // const [scrollState, setScrollState] = React.useState<ScrollState>('at-top')
 
-  React.useEffect(() => {
-    let previousScrollY = window.scrollY
+  // React.useEffect(() => {
+  //   let previousScrollY = window.scrollY
 
-    const handleScroll = () => {
-      const direction = previousScrollY < window.scrollY ? 'scrolling-down' : 'scrolling-up'
-      const state = window.scrollY < 30 ? 'at-top' : direction
-      previousScrollY = window.scrollY
-      setScrollState(state)
-    }
+  //   const handleScroll = () => {
+  //     const direction = previousScrollY < window.scrollY ? 'scrolling-down' : 'scrolling-up'
+  //     const state = window.scrollY < 30 ? 'at-top' : direction
+  //     previousScrollY = window.scrollY
+  //     setScrollState(state)
+  //   }
 
-    if (ghost) {
-      addEventListener('scroll', handleScroll, { passive: true })
-    } else {
-      removeEventListener('scroll', handleScroll)
-    }
+  //   if (ghost) {
+  //     addEventListener('scroll', handleScroll, { passive: true })
+  //   } else {
+  //     removeEventListener('scroll', handleScroll)
+  //   }
 
-    handleScroll()
-    return () => removeEventListener('scroll', handleScroll)
-  }, [ghost])
+  //   handleScroll()
+  //   return () => removeEventListener('scroll', handleScroll)
+  // }, [ghost])
+
+  const activeNav = (active: boolean) =>
+    active ? 'py-1.5 text-sky-500 border-b-2 border-sky-500' : 'py-1.5 hover:text-sky-500'
 
   return (
-    <Theme asChild className="radix-themes-custom-fonts">
-      <div
-        data-scroll-state={scrollState}
-        data-mobile-menu-open={mobileMenu.open}
-        className={cn(styles.HeaderRoot, ghost ? styles.ghost : '')}
-      >
-        <div className={styles.HeaderInner}>
-          {/* Components that hide the scrollbar (like Dialog) add padding to
-					account for the scrollbar gap to avoid layout jank. This does not
-					work for position: fixed elements. Since we use react-remove-scroll
-					under the hood for those primitives, we can add this helper class
-					provided by that lib to deal with that for the Header.
-					https://github.com/radix-ui/website/issues/64
-					https://github.com/theKashey/react-remove-scroll#positionfixed-elements */}
-          <div
-            className={RemoveScroll.classNames.fullWidth}
-            style={{
-              position: 'absolute',
-              height: 'inherit',
-              top: 0,
-              left: 0,
-              right: 0,
-            }}
-          >
-            <Flex
-              display={{ sm: 'none' }}
-              align="center"
-              position="absolute"
-              top="0"
-              bottom="0"
-              left="0"
-              pl="4"
+    <header className="top-0 z-40 w-full backdrop-blur flex-none transition-colors duration-500 bg-[#122242] lg:z-50 lg:px-4">
+      <div className="mx-auto">
+        <div className="md:py-1 border-b border-slate-900/10 lg:border-0 dark:border-slate-300/10 mx-4 lg:mx-4">
+          <div className="relative flex items-center justify-between">
+            <NextLink
+              href="/"
+              passHref
+              className="flex-none block w-12 md:w-32 overflow-hidden text-white"
             >
-              <NextLink href="/" passHref legacyBehavior>
-                <BoxLink>
-                  <AccessibleIcon label="Homepage">
-                    <LogoIcon />
-                  </AccessibleIcon>
-                </BoxLink>
-              </NextLink>
-            </Flex>
+              <LogoIcon className="w-8 h-8 md:w-12 md:h-12" />
+            </NextLink>
 
-            <div className={styles.HeaderProductLinksContainer}>
-              <HeaderProductLink href="/grid" active={pathname.startsWith('/grid')}>
-                Grid
-              </HeaderProductLink>
-              <HeaderProductLink href="/strategy" active={pathname.startsWith('/strategy')}>
-                Strategy
-              </HeaderProductLink>
-              <HeaderProductLink href="/airdrop" active={pathname.startsWith('/airdrop')}>
-                Airdrop
-              </HeaderProductLink>
-              <HeaderProductLink href="/portfolio" active={pathname.startsWith('/portfolio')}>
-                Portfolio
-              </HeaderProductLink>
-              <HeaderProductLink href="/docs" active={pathname.startsWith('/docs')}>
-                Docs
-              </HeaderProductLink>
+            <div className="relative hidden md:flex items-center justify-center text-white font-semibold">
+              <nav className="text-sm leading-6 text-white">
+                <ul className="flex space-x-8">
+                  <li>
+                    <NextLink href="/" className={activeNav(pathname === '/')}>
+                      Grid
+                    </NextLink>
+                  </li>
+
+                  <li>
+                    <NextLink
+                      href="/strategy"
+                      className={activeNav(pathname.startsWith('/strategy'))}
+                    >
+                      Strategy
+                    </NextLink>
+                  </li>
+
+                  <li>
+                    <NextLink href="/reward" className={activeNav(pathname.startsWith('/reward'))}>
+                      Reward
+                    </NextLink>
+                  </li>
+
+                  <li>
+                    <NextLink
+                      href="/portfolio"
+                      className={activeNav(pathname.startsWith('/portfolio'))}
+                    >
+                      Portfolio
+                    </NextLink>
+                  </li>
+
+                  <li>
+                    <NextLink
+                      href="/docs"
+                      target="_blank"
+                      className={activeNav(pathname.startsWith('/docs'))}
+                    >
+                      Docs
+                    </NextLink>
+                  </li>
+                </ul>
+              </nav>
             </div>
 
-            <Flex
-              display={{ initial: 'none', md: 'flex' }}
-              align="center"
-              gap="5"
-              position="absolute"
-              top="0"
-              bottom="0"
-              right="0"
-              pr="4"
-            >
-              {/* <Link size="2" color="gray" href="/blog" highContrast={pathname.includes('/blog')}>
-                Blog
-              </Link> */}
+            <div className="text-sm relative hidden md:flex items-center justify-center text-white md:w-40 font-semibold">
+              {/* <PrivyWalletButton /> */}
               <WalletButton />
-
-              <ThemeToggle />
-            </Flex>
-
-            <Flex
-              display={{ md: 'none' }}
-              align="center"
-              gap="4"
-              position="absolute"
-              top="0"
-              bottom="0"
-              right="0"
-              pr="4"
-            >
-              <div className={styles.HeaderThemeToggleContainer}>
-                <ThemeToggle />
-              </div>
-              {/* 
-              <Tooltip className="radix-themes-custom-fonts" content="Navigation">
-                <IconButton
-                  size="3"
-                  variant="ghost"
-                  color="gray"
-                  data-state={mobileMenu.open ? 'open' : 'closed'}
-                  onClick={() => mobileMenu.setOpen((open: boolean) => !open)}
-                  className={styles.MobileMenuButton}
-                >
-                  <HamburgerMenuIcon width="16" height="16" />
-                </IconButton>
-              </Tooltip> */}
-            </Flex>
+            </div>
           </div>
         </div>
       </div>
-    </Theme>
+    </header>
   )
 }
 
-const HeaderProductLink = ({
-  active,
-  children,
-  href = '',
-  ...props
-}: React.ComponentPropsWithoutRef<'a'> & { active?: boolean }) => (
-  <NextLink href={href} passHref legacyBehavior>
-    <a data-state={active ? 'active' : 'inactive'} className={styles.HeaderProductLink} {...props}>
-      <span className={styles.HeaderProductLinkInner}>{children}</span>
-      <span className={styles.HeaderProductLinkInnerHidden}>{children}</span>
-    </a>
-  </NextLink>
-)
+// const HeaderProductLink = ({
+//   active,
+//   children,
+//   href = '',
+//   ...props
+// }: React.ComponentPropsWithoutRef<'a'> & { active?: boolean }) => (
+//   <NextLink href={href} passHref legacyBehavior>
+//     <a data-state={active ? 'active' : 'inactive'} {...props}>
+//       <span>{children}</span>
+//       <span>{children}</span>
+//     </a>
+//   </NextLink>
+// )

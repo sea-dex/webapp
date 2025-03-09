@@ -1,10 +1,7 @@
 'use client'
 import * as React from 'react'
 import { createContext } from '@radix-ui/react-context'
-import { RemoveScroll } from 'react-remove-scroll'
-import { Slot } from '@radix-ui/react-slot'
-import { Box, Portal, Theme } from '@radix-ui/themes'
-import { usePathname, useSearchParams } from 'next/navigation'
+// import { usePathname, useSearchParams } from 'next/navigation'
 
 const [MenuProvider, useMenuContext] = createContext<{
   open: boolean
@@ -69,24 +66,5 @@ export const MobileMenu = ({ children }: { children: React.ReactNode }) => {
     return null
   }
 
-  return (
-    <Portal>
-      <Theme className="radix-themes-custom-fonts">
-        <RemoveScroll as={Slot} allowPinchZoom enabled>
-          <Box
-            position="fixed"
-            inset="0"
-            style={{
-              zIndex: 1,
-              display: 'grid',
-              gridTemplateRows: 'auto minmax(0, 1fr)',
-              backgroundColor: 'var(--color-background)',
-            }}
-          >
-            {children}
-          </Box>
-        </RemoveScroll>
-      </Theme>
-    </Portal>
-  )
+  return <div>{children}</div>
 }
