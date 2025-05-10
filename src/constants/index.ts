@@ -112,3 +112,16 @@ export const getContractAddress = (
 
   throw new Error('unsupport chain: ' + chain)
 }
+
+export const getToken = (
+  chain: string | number,
+  name: string) => {
+
+  if (name === 'eth' || name === 'weth' || name === 'usdc') {
+
+  }
+  // todo
+  return {
+    address: ''
+  }
+}

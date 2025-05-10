@@ -1,13 +1,15 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { init, dispose, Chart } from 'klinecharts'
 import { Icon } from '@iconify/react'
+import { useAtom, useSetAtom } from 'jotai'
 
 import { getKLines } from '@/api/kline'
 import { updateChartStyles } from './chart'
 
 import { getCurrentIntervalStart } from '@/utils/kline'
+import { currentPair, priceCurr } from '@/states/pair'
 import {
   Dialog,
   DialogClose,
@@ -19,6 +21,10 @@ import {
   DialogTrigger,
 } from '@radix-ui/react-dialog'
 import { cn } from '@/lib/utils'
+import PairSelect from './PairSelect'
+import { getTokenList, ITokenList } from '@/api/tokenList'
+import { useAccount, useConnect } from 'wagmi'
+
 
 interface KLineChartProps {
   base: string
@@ -40,6 +46,11 @@ const getKlineQueryKey = (props: KLineChartProps) => {
 
 const klineIntervals = ['15m', '30m', '1h', '4h', '8h', '12h', '1d', '1w']
 function KLineChart(props: KLineChartProps) {
+  const {chainId} = useAccount()
+  const setPriceCurr = useSetAtom(priceCurr)
+  const [pair, setPair] = useAtom(currentPair)
+  const [tokens, setTokens] = useState<ITokenList>({quoteList: [{
+  }], hottest: [], tokenList: []})
 
   const updateKLineData = async (chart: Chart) => {
     let cachedKey = ''
@@ -48,12 +59,14 @@ function KLineChart(props: KLineChartProps) {
       if (key === cachedKey) {
         const items = await getKLines(props.base, props.quote, props.interval, 1)
         if (items.length > 0) {
+          setPriceCurr(items[items.length - 1].close)
           chart.updateData(items[items.length - 1])
         }
         // console.log('update latest price')
       } else {
         const items = await getKLines(props.base, props.quote, props.interval)
         if (items.length > 0) {
+          setPriceCurr(items[items.length - 1].close)
           chart.applyNewData(items)
           cachedKey = key
           console.log('update total data')
@@ -67,6 +80,14 @@ function KLineChart(props: KLineChartProps) {
     }, 1000)
     return tmr
   }
+
+  useEffect(() => {
+    const fn = async() => {
+      const res = await getTokenList(chainId!)
+      setTokens(res)
+    }
+    fn()
+  }, [chainId])
 
   useEffect(() => {
     const chart = init('chart')
@@ -95,7 +116,7 @@ function KLineChart(props: KLineChartProps) {
         <Dialog>
           <DialogTrigger asChild>
             <div className="flex items-center">
-              <button className="pr-2">ETH/USDC</button>
+              <button className="pr-2">{pair.base.symbol}/{pair.quote.symbol}</button>
               <Icon icon="radix-icons:caret-down" width={24} height={24} />
             </div>
           </DialogTrigger>
@@ -105,6 +126,7 @@ function KLineChart(props: KLineChartProps) {
             <DialogContent className="text-white top-8 rounded-lg left-1/2 -translate-x-1/2 w-[90vw] max-w-[500px] h-[475px] bg-[#304255] fixed z-50">
               <DialogTitle>Select Pair</DialogTitle>
               <DialogDescription>select grid pair</DialogDescription>
+              <PairSelect tokens={tokens} />
               <div className="h-6">Select Token</div>
               <DialogClose asChild>
                 <div className='absolute top-3 right-3'>
